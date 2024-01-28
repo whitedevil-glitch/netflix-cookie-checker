@@ -16,7 +16,7 @@ cookies checker for netflix in netscape format.
 <br>
 
 # Credits
-This project was inspired by <a href="https://github.com/matheeshapathirana/Netflix-cookie-checker/">Matheesh Pathirana</a>
+This project was inspired by <a href="https://github.com/matheeshapathirana/Netflix-cookie-checker/">Matheesh Pathirana</a> <br>
 This project doesn't use selenium unlike the mentioned repo. I used <code>requests</code>,<code>batch-processing</code> and <code>parallel-execution</code> to make the workflow fast.<br><br>
 <b>It is 50 times faster than the Matheesh's repository.</b>
 <br>
