@@ -4,7 +4,7 @@ cookies checker for netflix in netscape format.
 # Installation
 
 ```cmd
-  git clone https://github.com/matheeshapathirana/Netflix-cookie-checker.git
+  git clone https://github.com/whitedevil-glitch/netflix-cookie-bot.git
   cd Netflix-cookie-checker
   pip install -r requirements.txt
 ```
