@@ -1,9 +1,6 @@
 import json
 import os
-import sys
-import config
 import requests
-import progressbar
 import asyncio
 import time
 
