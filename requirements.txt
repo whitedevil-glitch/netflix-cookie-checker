@@ -1,0 +1,3 @@
+requests
+progressbar==2.5
+psutil==5.9.7
