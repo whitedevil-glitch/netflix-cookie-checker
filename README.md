@@ -5,3 +5,7 @@ cookies checker for netflix in netscape format.
 #### next, run the ```main1.py``` which will check the cookies and place the valid cookies into ```"working_cookies"``` folder.
 
 > **Note:** If you already have json cookies, paste it in "json_cookies" folder.
+<br>
+<br>
+<br>
+Made with ❤️ by whitedevil-glitch
