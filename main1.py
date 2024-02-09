@@ -3,7 +3,6 @@ import os
 import requests
 import asyncio
 import time
-
 working_cookies_path = "working_cookies"
 exceptions = 0
 working_cookies = 0
@@ -32,21 +31,28 @@ def load_cookies_from_json(json_cookies_path):
 
 
 
+
 def send_request_with_cookies(url, cookies):
     try:
         response = requests.get(url, cookies=cookies)
-        print(f"Response URL: {response.url}, Status Code: {response.status_code}")
-        # Check for 200 OK response for a valid cookie
-        if response.status_code == 200 and "netflix.com/browse" in response.url:
+        print(f"Response URL: {response.url}")
+
+        # Check if the URL contains "netflix.com/browse"
+        if "netflix.com/browse" in response.url:
             return True
-        elif response.status_code == 302:
-            return False
         else:
-            return None
+            return False
+
+    except Exception as e:
+        print(f"Error occurred during the request: {str(e)}")
+        return False
+
+
 
     except Exception as e:
         print(f"Error occurred during the request: {str(e)}")
         return None
+
 
 def process_cookie(filename):
     filepath = os.path.join("json_cookies", filename)
