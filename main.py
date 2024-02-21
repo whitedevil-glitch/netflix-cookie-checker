@@ -3,25 +3,23 @@ import os
 import requests
 import asyncio
 import time
+
 working_cookies_path = "working_cookies"
 exceptions = 0
 working_cookies = 0
 expired_cookies = 0
 
-MAX_CONCURRENT_REQUESTS = 8  # Adjust based on your system's capacity
-BATCH_SIZE = 28  # Adjust based on experimentation
+MAX_CONCURRENT_REQUESTS = 8
+BATCH_SIZE = 28
 
 def maximum():
-    count = 0
-    for root_dir, cur_dir, files in os.walk(r"json_cookies"):
-        count += len(files)
+    count = sum(len(files) for _, _, files in os.walk(r"json_cookies"))
     return count
 
 def load_cookies_from_json(json_cookies_path):
     with open(json_cookies_path, "r", encoding="utf-8") as cookie_file:
         cookies_list = json.load(cookie_file)
 
-    # Convert the list of cookies into a dictionary
     try:
         cookies = {cookie['name']: cookie['value'] for cookie in cookies_list}
     except (KeyError, TypeError):
@@ -29,63 +27,40 @@ def load_cookies_from_json(json_cookies_path):
 
     return cookies
 
-
-
-
 def send_request_with_cookies(url, cookies):
     try:
         response = requests.get(url, cookies=cookies)
-        print(f"Response URL: {response.url}")
-
-        # Check if the URL contains "netflix.com/browse"
-        if "netflix.com/browse" in response.url:
-            return True
-        else:
-            return False
+        return "netflix.com/browse" in response.url
 
     except Exception as e:
         print(f"Error occurred during the request: {str(e)}")
         return False
-
-
-
-    except Exception as e:
-        print(f"Error occurred during the request: {str(e)}")
-        return None
-
 
 def process_cookie(filename):
     filepath = os.path.join("json_cookies", filename)
 
     if os.path.isfile(filepath):
         with open(filepath, "r", encoding="utf-8") as file:
-            global content
             content = file.read()
-
-            url = "https://netflix.com/browse"  
+            url = "https://netflix.com/browse"
 
             try:
                 cookies = load_cookies_from_json(filepath)
                 is_valid_cookie = send_request_with_cookies(url, cookies)
 
-                if is_valid_cookie is True:
+                if is_valid_cookie:
                     print(f"Working cookie found! - {filename}")
-                    try:
-                        os.makedirs(working_cookies_path, exist_ok=True)
-                        with open(os.path.join(working_cookies_path, filename), "w", encoding="utf-8") as a:
-                            a.write(content)
-                        global working_cookies
-                        working_cookies += 1
-                    except FileExistsError:
-                        with open(os.path.join(working_cookies_path, filename), "w", encoding="utf-8") as a:
-                            a.write(content)
-                        working_cookies += 1
+                    os.makedirs(working_cookies_path, exist_ok=True)
+                    with open(os.path.join(working_cookies_path, filename), "w", encoding="utf-8") as a:
+                        a.write(content)
+                    global working_cookies
+                    working_cookies += 1
                 elif is_valid_cookie is False:
                     print(f"Invalid cookie - {filename}")
                     global expired_cookies
                     expired_cookies += 1
                 else:
-                    print(f"Invalid cookiess - {filename}")
+                    print(f"Invalid cookies - {filename}")
                     global exceptions
                     exceptions += 1
 
@@ -94,10 +69,7 @@ def process_cookie(filename):
                 exceptions += 1
 
 async def process_batch_async(filenames):
-    tasks = []
-    for filename in filenames:
-        tasks.append(asyncio.to_thread(process_cookie, filename))
-
+    tasks = [asyncio.to_thread(process_cookie, filename) for filename in filenames]
     await asyncio.gather(*tasks)
 
 async def process_cookies_concurrently(filenames):
@@ -123,4 +95,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-    
