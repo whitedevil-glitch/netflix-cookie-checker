@@ -1,5 +1,6 @@
 # netflix-cookie-bot
-cookies checker for netflix in netscape format.
+cookies checker for netflix.
+convert the netscape format cookies into json cookies and check for the validity of the cookies.
 <br>
 # Installation
 
