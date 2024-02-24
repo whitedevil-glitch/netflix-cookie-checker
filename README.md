@@ -7,11 +7,19 @@ convert the netscape format cookies into json cookies and check for the validity
 This script is intended for educational purposes and personal use only. Use it responsibly and respect the terms of service of the websites you're checking cookies for.
 
 ## Installation
-
+>  **Note:** requires python 3.10 and git(optional) installed on your pc.
 ```cmd
   git clone https://github.com/whitedevil-glitch/netflix-cookie-bot.git
   cd Netflix-cookie-checker
   pip install -r requirements.txt
+```
+### or
+
+```cmd
+  click on code and download zip
+  unzip the folder
+  open a terminal in that directory
+  run pip install -r requirements.txt
 ```
 ## Usage
 
