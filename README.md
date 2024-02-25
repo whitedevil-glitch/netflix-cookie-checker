@@ -23,8 +23,8 @@ This script is intended for educational purposes and personal use only. Use it r
 ```
 ## Usage
 
-1. first, run the ```cookie_converter.py``` and convert the ```netscape cookies``` format to ```json```.
-2. next, run the ```main.py``` which will check the cookies and place the valid cookies into ```"working_cookies"``` folder.
+1. first, paste this to your terminal ``` python cookie_converter.py``` and convert the ```netscape cookies``` format to ```json```.
+2. next, paste this one: ```python main.py``` which will check the cookies and place the valid cookies into ```"working_cookies"``` folder.
 >  **Note:** If you already have json cookies, paste it in "json_cookies" folder.
 <br>
 
