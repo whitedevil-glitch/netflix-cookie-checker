@@ -1,37 +1,56 @@
-## netflix-cookie-bot
-cookies checker for netflix.<br>
-convert the netscape format cookies into json cookies and check for the validity of the cookies on netflix website.
-<br>
+# netflix-cookie-bot
+cookies checker for netflix. 
+ 
+this converts the netscape format cookies into json cookies and check if they still work on netflix.
 
-## Disclaimer
-This script is intended for educational purposes and personal use only. Use it responsibly and respect the terms of service of the websites you're checking cookies for.
+## disclaimer
+this script is for educational purposes & personal use only. don't be dumb, use it responsibly & respect the website's terms of service.
 
-## Installation
->  **Note:** requires python 3.10 and git(optional) installed on your pc.
+## installation
+> **note:** needs python 3.10 & git (optional).  
 ```cmd
   git clone https://github.com/whitedevil-glitch/netflix-cookie-bot.git
-  cd Netflix-cookie-checker
+  cd netflix-cookie-checker
   pip install -r requirements.txt
 ```
-### or
+## or
 
 ```cmd
-  click on code and download zip
-  unzip the folder
-  open a terminal in that directory
+  click on code & download zip  
+  unzip the folder  
+  open a terminal in that directory  
   run pip install -r requirements.txt
 ```
-## Usage
 
-1. first, paste this to your terminal ``` python cookie_converter.py``` and convert the ```netscape cookies``` format to ```json```.
-2. next, paste this one: ```python main.py``` which will check the cookies and place the valid cookies into ```"working_cookies"``` folder.
->  **Note:** If you already have json cookies, paste it in "json_cookies" folder.
-<br>
+## usage
 
-## Credits
-This project was inspired by <a href="https://github.com/matheeshapathirana/Netflix-cookie-checker/">Matheesh Pathirana</a> <br>
-This project doesn't use selenium unlike the mentioned repo. I used <code>requests</code>,<code>batch-processing</code> and <code>parallel-execution</code> to make the workflow fast.<br><br>
-<b>It is 50 times faster than the Matheesh's repository.</b>
-<br>
-<br>
-Made with ❤️ by whitedevil-glitch
+1. first, run this in terminal:
+
+```cmd
+python cookie_converter.py ```
+
+this will convert netscape cookies into json.
+
+
+2. then run:
+
+```cmd python main.py ```
+
+this checks the cookies & moves the valid ones to "working_cookies" folder.
+
+
+
+> note: if you already have json cookies, just drop them in "json_cookies" folder.
+
+
+
+## credits
+
+this project was inspired by <b>matheesh pathirana<\b> but unlike that repo, this one doesn't use selenium. instead, it runs on requests, batch-processing, and parallel-execution to make it fast af.
+
+it's <b>50x faster<\b> than matheesh's repo.
+
+made with ❤️ by whitedevil-glitch.
+
+Just save this as `README.md`, and it’ll be properly formatted for GitHub or any markdown viewer.
+
