@@ -47,7 +47,7 @@ this checks the cookies & moves the valid ones to "working_cookies" folder.
 
 ## credits
 
-this project was inspired by <a href="#"><b>matheesh pathirana</b></a> but unlike that repo, this one doesn't use selenium. instead, it runs on requests, batch-processing, and parallel-execution to make it fast af.
+this project was inspired by <a href="https://github.com/matheeshapathirana/Netflix-cookie-checker"><b>matheesh pathirana</b></a> but unlike that repo, this one doesn't use selenium. instead, it runs on requests, batch-processing, and parallel-execution to make it fast af.
 
 it's <b>50x faster</b> than matheesh's repo.
 
