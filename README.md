@@ -27,7 +27,8 @@ this script is for educational purposes & personal use only. don't be dumb, use 
 1. first, run this in terminal:
 
 ```cmd
-python cookie_converter.py ```
+python cookie_converter.py
+```
 
 this will convert netscape cookies into json.
 
